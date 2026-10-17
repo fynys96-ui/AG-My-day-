@@ -1,15 +1,29 @@
-# ارتقِ كل يوم — Quest Edition v3
+# ارتقِ كل يوم — Quest Edition V4
 
-تطبيق PWA عربي، يعمل دون Backend. HTML/CSS/JS محلي، LocalStorage مع تصدير واستيراد JSON.
+ارفع محتويات هذا المجلد (وليس المجلد نفسه) إلى جذر مستودع GitHub Pages.
 
-## النشر
-ارفع **محتويات** هذا المجلد إلى جذر فرع `main` في GitHub Pages، واستبدل الملفات ذات الأسماء نفسها. حافظ على `index.html` و`sw.js` و`manifest.webmanifest` والأيقونات في الجذر. بعد النشر افتح الموقع وأعد تحميله لإزالة التخزين المؤقت.
+## حفظ البيانات
+يحافظ التطبيق على قاعدة بيانات V2 الأصلية في localStorage تحت المفتاح `my-day-ag-v2`، وإضافات V4 في `irtaqi-quest-v4-extras`. خذ نسخة احتياطية قبل التحديث. النسخة V4 تدعم استيراد V2/V3 وV4.
 
-## البيانات
-النسخة الجديدة تستخدم مفتاح التخزين `my-day-ag-v2` عمدًا للحفاظ على بيانات الإصدار السابق على **نفس الأصل والمتصفح**. صدّر نسخة احتياطية قبل النشر. لا توجد مزامنة سحابية تلقائية؛ لن تنتقل البيانات لجهاز آخر إلا باستيراد نسخة احتياطية.
+## المزامنة الاختيارية عبر Supabase
+أنشئ مشروع Supabase ثم نفّذ هذا SQL في SQL Editor:
 
-## التنبيهات
-إشعارات الصلاة تحتاج إدخال مواقيت صحيحة يدويًا؛ الأوقات الافتراضية **أمثلة وليست مواقيت صلاة موثوقة**. تعمل الفحوص أثناء فتح التطبيق فقط؛ إغلاق التطبيق يمنع ضمان التنبيه. السماح بإشعارات المتصفح اختياري، وتحتاج HTTPS. إشعارات Push بالخلفية تتطلب Backend واشتراكات Push.
+```sql
+create table if not exists public.irtaqi_backups (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  payload jsonb not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.irtaqi_backups enable row level security;
+create policy "read own backup" on public.irtaqi_backups for select to authenticated using ((select auth.uid()) = user_id);
+create policy "insert own backup" on public.irtaqi_backups for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy "update own backup" on public.irtaqi_backups for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+```
+
+فعّل Email OTP من إعدادات Supabase Auth، واضبط قالب البريد ليحتوي على `{{ .Token }}` لو عايز رمزًا بدل رابط. استخدم فقط **publishable/anon** key، لا تستخدم `service_role` أو مفتاحًا سريًا. أدخل Project URL والمفتاح والبريد من إعدادات التطبيق. المزامنة يدوية وتستبدل البيانات عند الاستعادة؛ لا يوجد دمج أو مزامنة تلقائية. Access token يبقى في ذاكرة الصفحة فقط حتى إعادة تحميلها.
+
+## مواقيت الصلاة
+تحتاج الإنترنت، وتستخدم واجهة AlAdhan حسب المدينة والدولة وطريقة الحساب. ليست ضمانًا للدقة المحلية؛ راجعها. التنبيهات تعمل عند فتح التطبيق فقط، لا يوجد Push خلفي.
 
 ## ملاحظات
-الصلوات والأذكار والروتين اليومي تظهر تلقائيًا كل يوم، والمهام المخصصة تدعم التكرار اليومي. XP يحدد المستوى ولا ينخفض عند صرف النجوم. وضع الامتحانات يضاعف XP للدراسة. لا تجمع التطبيق أي بيانات عنك على خادم.
+المؤقت يعمل في التبويب المفتوح؛ لا يسجل جلسة عند إغلاق الصفحة. أيام الإنقاذ لا تمنح XP. نظام مراجعة الدروس مستقل عن XP حتى لا يتضاعف الرصيد بالخطأ.
