@@ -1,1 +1,3 @@
-Upload all files and the icons folder to the root of a GitHub repository. In Settings > Pages choose Deploy from a branch, main, /(root). Wait for the HTTPS URL; open it in Chrome on Android and select Install app or Add to Home screen. Local HTML file opening does not install a PWA. Progress is stored per browser and origin; use Export Backup in the old version and Import Backup in the hosted version to transfer it.
+My Day AG v2
+Upload all files to the ROOT of your existing GitHub Pages repository. Do not upload the ZIP itself.
+IMPORTANT: Export backup from current app before updating. Uses the same localStorage origin and migrates prior weekly checks.
