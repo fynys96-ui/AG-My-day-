@@ -1,7 +1,9 @@
 {
-  "name": "My Day AG — Quest Edition",
-  "short_name": "My Day AG",
-  "description": "Gamified weekly worship and study planner",
+  "name": "ارتقِ كل يوم - Quest Edition",
+  "short_name": "ارتقِ",
+  "description": "متابعة العادات والمهام بنظام XP ونجوم ومستويات",
+  "lang": "ar",
+  "dir": "rtl",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
