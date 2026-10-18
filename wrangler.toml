@@ -1,0 +1,11 @@
+name = "irtaqi-accounts-api"
+main = "worker.js"
+compatibility_date = "2026-10-17"
+
+[vars]
+ALLOWED_ORIGIN = "https://fynys96-ui.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "irtaqi-users"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
